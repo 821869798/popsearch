@@ -237,7 +237,7 @@ popData.engines = [{
   id: "Site_st",
   title: "Search Current Website",
   description: "在当前网站内搜索 / Search in current website",
-  defaultState: 1,
+  defaultState: 0,
   src: popData.icons.inSiteIcon,
   href: 'https://www.google.com/search?newwindow=1&safe=off&q=${text}%20site:${domain}'
 }, {
@@ -410,7 +410,7 @@ fixPos = function (sel, e) {
   if (offsetLeft - m_left < 4) {
     fix = 4 - offsetLeft + m_left;
   }
-  $('#ShowUpBox').css("top", offsetTop + "px").css("left", offsetLeft - m_left + fix + "px");
+  $('#ShowUpBox').css("top", offsetTop + "px").css("left", offsetLeft - m_left / 2 + fix + "px");
   return $('#popupTip').css('margin-left', m_left - 20 - fix);
 };
 
@@ -512,6 +512,15 @@ doRequest = function (engine, i, wait) {
     ErrHandle = ajaxError;
   }
   lang = navigator.language || navigator.userLanguage || "zh-CN";
+
+  var totalCharacters = popData.text.length;
+  var englishCharacters = (popData.text.match(/[a-zA-Z]/g) || []).length;
+
+  if (englishCharacters < (totalCharacters / 2)) {
+    // 英文字符不超过总字符的一半，翻译成英语
+    lang = 'en';
+  }
+
   if (engine === 'google') {
     return GM_xmlhttpRequest({
       method: 'POST',
