@@ -8,3 +8,4 @@ Browser UserScripts similar to Popclip
 - 支持github搜索
 - 支持**[pot-desktop](https://github.com/pot-app/pot-desktop)**的划词翻译
 - 优化内置的翻译功能：目标语言判断
+- 优化弹框位置，输入时关闭弹框

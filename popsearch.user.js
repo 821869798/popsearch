@@ -384,11 +384,7 @@ fixPos = function (sel, e) {
     eventTop = e.pageY;
     eventLeft = e.pageX;
     //log offsetTop + " : " + offsetLeft + " <==> " + eventTop + " : " + eventLeft
-    if (Math.abs(offsetTop - eventTop) > 50) {
-      offsetTop = eventTop - 10;
-    } else {
-      offsetTop = Math.min(eventTop - 10, offsetTop);
-    }
+    offsetTop = offsetTop - 2;
     if (Math.abs(offsetLeft - eventLeft) > 50) {
       //translate
       offsetLeft = eventLeft + 10;
@@ -396,14 +392,19 @@ fixPos = function (sel, e) {
   } else {
     $('#showUpBody').css('margin-left', '60px');
   }
+  var showBoxHeight = $('#ShowUpBox').height();
   if (GetOpt('Dis_st')) {
     //UpSide
-    offsetTop = offsetTop - 4 - $('#ShowUpBox').height();
-    if (offsetTop - document.documentElement.scrollTop < 40) {
-      offsetTop = document.documentElement.scrollTop + 40;
+    var tmpTop = offsetTop - 4 - showBoxHeight;
+    if (tmpTop - document.documentElement.scrollTop < 40) {
+      //offsetTop = document.documentElement.scrollTop + 40;
+      offsetTop += offsets[2];
+      // use down
+    } else {
+      offsetTop = tmpTop;
     }
   } else {
-    offsetTop += 1.1 * offsets[2];
+    offsetTop += offsets[2];
   }
   m_left = $('#ShowUpBox').width();
   fix = 0;
@@ -683,6 +684,10 @@ $(document).on("keydown", function (event) {
   if (event.ctrlKey && event.altKey && event.key === "p") {
     return ShowBar();
   }
+  // close when input 
+  hideBar();
+  event.stopPropagation();
+  return False;
 });
 
 eventFromTextbox = function (eventList) {
@@ -1113,15 +1118,15 @@ getLastRange = function (selection) {
 get_selection_offsets = function (selection, e) {
   var $test_span, Rect, lastRange, newRange;
   try {
-    $test_span = $('<span style="display:inline;">x</span>');
-    // "x" because it must have a height
+    $test_span = $('<span style="display:inline;"></span>');
     lastRange = getLastRange(selection);
     newRange = document.createRange();
-    newRange.setStart(lastRange.endContainer, lastRange.endOffset);
-    newRange.insertNode($test_span[0]);
+    newRange.setStart(lastRange.startContainer, lastRange.startOffset);
+    newRange.setEnd(lastRange.endContainer, lastRange.endOffset);
+    newRange.surroundContents($test_span[0]);
     Rect = $test_span[0].getBoundingClientRect();
-    $test_span.remove();
-    return [Rect.top + window.scrollY, Rect.left + window.scrollX, 0, 0];
+    $test_span.contents().unwrap();
+    return [Rect.top + window.scrollY, Rect.left + window.scrollX, Rect.height, 0];
   } catch (error) {
     return [e.pageY, e.pageX, 0, 0];
   }
