@@ -384,7 +384,11 @@ fixPos = function (sel, e) {
     eventTop = e.pageY;
     eventLeft = e.pageX;
     //log offsetTop + " : " + offsetLeft + " <==> " + eventTop + " : " + eventLeft
-    offsetTop = offsetTop - 2;
+    if (Math.abs(offsetTop - eventTop) > 50) {
+      offsetTop = eventTop - 10;
+    } else {
+      offsetTop = Math.min(eventTop - 5, offsetTop - 2);
+    }
     if (Math.abs(offsetLeft - eventLeft) > 50) {
       //translate
       offsetLeft = eventLeft + 10;
@@ -397,9 +401,15 @@ fixPos = function (sel, e) {
     //UpSide
     var tmpTop = offsetTop - 4 - showBoxHeight;
     if (tmpTop - document.documentElement.scrollTop < 40) {
-      //offsetTop = document.documentElement.scrollTop + 40;
-      offsetTop += offsets[2];
-      // use down
+      //console.log("xiao:" + tmpTop + " " + document.documentElement.scrollTop + " " + offsets[2]);
+      if(tmpTop > (document.documentElement.scrollTop + 25))
+      {
+        offsetTop = tmpTop;
+      }else{
+        offsetTop = offsetTop + 10 + offsets[2];
+      }
+      //offsetTop = document.documentElement.scrollTop + 60 + offsets[2];
+      //console.log("offsetTop:" + offsetTop);
     } else {
       offsetTop = tmpTop;
     }
@@ -1118,14 +1128,14 @@ getLastRange = function (selection) {
 get_selection_offsets = function (selection, e) {
   var $test_span, Rect, lastRange, newRange;
   try {
-    $test_span = $('<span style="display:inline;"></span>');
+    $test_span = $('<span style="display:inline;">x</span>');
+    // "x" because it must have a height
     lastRange = getLastRange(selection);
     newRange = document.createRange();
-    newRange.setStart(lastRange.startContainer, lastRange.startOffset);
-    newRange.setEnd(lastRange.endContainer, lastRange.endOffset);
-    newRange.surroundContents($test_span[0]);
+    newRange.setStart(lastRange.endContainer, lastRange.endOffset);
+    newRange.insertNode($test_span[0]);
     Rect = $test_span[0].getBoundingClientRect();
-    $test_span.contents().unwrap();
+    $test_span.remove();
     return [Rect.top + window.scrollY, Rect.left + window.scrollX, Rect.height, 0];
   } catch (error) {
     return [e.pageY, e.pageX, 0, 0];
