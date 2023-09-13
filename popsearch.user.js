@@ -527,15 +527,16 @@ doRequest = function (engine, i, wait) {
   var totalCharacters = popData.text.length;
   var englishCharacters = (popData.text.match(/[a-zA-Z]/g) || []).length;
 
+  var targetLang = lang;
   if (englishCharacters < (totalCharacters / 2)) {
     // 英文字符不超过总字符的一半，翻译成英语
-    lang = 'en';
+    targetLang = 'en';
   }
 
   if (engine === 'google') {
     return GM_xmlhttpRequest({
       method: 'POST',
-      url: `https://translate.google.com/translate_a/single?client=gtx&dj=1&q=${popData.text}&sl=auto&tl=${lang}&hl=${lang}&ie=UTF-8&oe=UTF-8&source=icon&dt=t&dt=bd`,
+      url: `https://translate.google.com/translate_a/single?client=gtx&dj=1&q=${popData.text}&sl=auto&tl=${targetLang}&hl=${lang}&ie=UTF-8&oe=UTF-8&source=icon&dt=t&dt=bd`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         "Accept-Encoding": "gzip, deflate"
