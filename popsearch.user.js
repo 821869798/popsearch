@@ -697,8 +697,6 @@ $(document).on("keydown", function (event) {
   }
   // close when input 
   hideBar();
-  event.stopPropagation();
-  return False;
 });
 
 eventFromTextbox = function (eventList) {
